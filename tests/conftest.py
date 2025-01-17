@@ -1,3 +1,4 @@
+import os
 import pytest
 from appium import webdriver
 from dotenv import load_dotenv
@@ -19,7 +20,10 @@ def pytest_configure(config):
     context = config.getoption("--context")
     env_file_path = f".env.{context}"
 
-    load_dotenv(dotenv_path=env_file_path)
+    if os.path.exists(env_file_path):
+        load_dotenv(dotenv_path=env_file_path)
+    else:
+        print(f"Warning: Configuration file '{env_file_path}' not found.")
 
 
 @pytest.fixture

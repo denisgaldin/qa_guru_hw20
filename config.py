@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from appium.options.android import UiAutomator2Options
-from utils import abs_path_from_project
+from utils.file import abs_path_from_project
 
 
 def to_driver_options(context):
