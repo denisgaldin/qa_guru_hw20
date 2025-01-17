@@ -27,20 +27,26 @@ def context(request):
     return request.config.getoption("--context")
 
 
-@pytest.fixture(scope="function", autouse=True)
-def mobile_management(context):
+@pytest.fixture(scope='function')
+def android_mobile_management(context):
+    config = Config()
     options = config.to_driver_options(context=context)
 
-    browser.config.driver = webdriver.Remote(options.get_capability("remote_url"), options=options)
+    with allure.step('setup app session'):
+        browser.config.driver = webdriver.Remote(
+            command_executor=options.get_capability('appium:remote_url'),
+            options=options
+        )
+
     browser.config.timeout = 10.0
+    browser.config._wait_decorator = support._logging.wait_with(context=allure_commons._allure.StepContext)
 
     yield
+
+    browser.quit()
 
     attach.add_screenshot(browser)
     attach.add_xml(browser)
     session_id = browser.driver.session_id
 
     browser.quit()
-
-    if context == "bstack":
-        attach.add_video(session_id)
